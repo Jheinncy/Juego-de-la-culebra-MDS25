@@ -35,18 +35,46 @@ int main()
 {
     int x=8;
     int y=10;
+    int dx = 1, dy = 0; 
+    bool paused = false;
+    
     string snake = "--->";
     space();
+    
     while(true)
     {
-        gotoxy(x,y);
-        cout<<snake;
-        Sleep(80);
-        gotoxy(x,y);
-        cout<<"  ";
-        x++;
+        if(_kbhit()) {
+            char tecla = _getch();
 
-        if(x >= 68)
+            if(tecla == 'w' || tecla == 'W' || tecla == 72) { dx = 0; dy = -1; snake = "^"; }
+            if(tecla == 's' || tecla == 'S' || tecla == 80) { dx = 0; dy =  1; snake = "v"; }
+            if(tecla == 'a' || tecla == 'A' || tecla == 75) { dx = -1; dy = 0; snake = "<"; }
+            if(tecla == 'd' || tecla == 'D' || tecla == 77) { dx =  1; dy = 0; snake = ">"; }
+
+            if(tecla == 'p' || tecla == 'P') {
+                paused = true;
+                gotoxy(30, 3);
+                cout << "[Juego en PAUSA - presiona R]";
+            }
+
+            if(tecla == 'r' || tecla == 'R') {
+                paused = false;
+                gotoxy(30, 3);
+                cout << "                              ";
+            }
+        }
+
+        if(!paused) {
+            gotoxy(x,y);
+            cout<<snake;
+            Sleep(80);
+            gotoxy(x,y);
+            cout<<"   ";
+            x += dx;
+            y += dy;
+        }
+
+        if(!paused && (x <= 4 || x >= 68 || y <= 5 || y >= 25))
         {
             gotoxy(30,15);
             cout<<"PERDISTE, BUEN INTENTO";
@@ -56,3 +84,4 @@ int main()
     system("pause");
     return 0;
 }
+
