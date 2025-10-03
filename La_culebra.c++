@@ -73,7 +73,8 @@ int main()
             x += dx;
             y += dy;
         }
-
+//AAAAAAAAAAAAA
+        //ALGUIEN SABE COMO CRJS SE INSTALA C++ EN VISUAAAAAAAL?
         if(!paused && (x <= 4 || x >= 68 || y <= 5 || y >= 25))
         {
             gotoxy(30,15);
@@ -84,4 +85,5 @@ int main()
     system("pause");
     return 0;
 }
+
 
