@@ -3,7 +3,7 @@
 #include <conio.h>
 #include <cstdlib>
 #include <ctime>
-#include "points_system.hpp"  // usa tu versión mejorada
+#include "PointsSystem.hpp"  // usa tu versión mejorada
 
 using namespace std;
 
@@ -149,3 +149,4 @@ int main() {
 
     return 0;
 }
+
