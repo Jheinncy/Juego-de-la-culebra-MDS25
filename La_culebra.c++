@@ -127,7 +127,14 @@ void jugar() {
 
         // comer comida
         if (x == comidaX && y == comidaY) {
+            // borrar comida anterior
+            gotoxy(comidaX, comidaY);
+            cout << " ";
+
+            // generar nueva comida
             generarComida(comidaX, comidaY);
+
+            // actualizar puntos
             onSnakeAteFood();
         }
     }
@@ -149,4 +156,5 @@ int main() {
 
     return 0;
 }
+
 
