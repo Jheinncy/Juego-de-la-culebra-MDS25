@@ -1,8 +1,13 @@
-##include <iostream>
+#include <iostream>
+#include "points_system.hpp"
 #include <windows.h>
 #include <conio.h>
 using namespace std;
 
+
+
+
+float snakeSpeed = 4.0f
 void gotoxy(int x, int y)
 {
     HANDLE hCon;
@@ -73,8 +78,7 @@ int main()
             x += dx;
             y += dy;
         }
-//AAAAAAAAAAAAA
-        //ALGUIEN SABE COMO CRJS SE INSTALA C++ EN VISUAAAAAAAL?
+
         if(!paused && (x <= 4 || x >= 68 || y <= 5 || y >= 25))
         {
             gotoxy(30,15);
@@ -84,6 +88,28 @@ int main()
     }
     system("pause");
     return 0;
+}
+
+
+
+PointsSystem points;
+
+void onSnakeAteFood() {
+    points.onFoodEaten(snakeSpeed);
+}
+
+void onGameOver() {
+    if (!points.saveHighScore()) {
+        std::cerr << "Warning: couldn't save highscore file.\n";
+    }
+  
+    std::cout << "Score: " << points.getScore() << "  Highscore: " << points.getHighScore() << "\n";
+}
+
+
+void startNewRun() {
+    points.resetRun();
+ 
 }
 
 
