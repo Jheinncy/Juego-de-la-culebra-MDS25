@@ -3,12 +3,13 @@
 #include <conio.h>
 #include <cstdlib>
 #include <ctime>
-#include "PointsSystem.hpp"  // usa tu versión mejorada
+#include <vector>
+#include "PointsSystem.hpp" // usa tu versión mejorada
 
 using namespace std;
 
-PointsSystem points;  // sistema de puntos
-float snakeSpeed = 4.0f;  // factor de velocidad
+PointsSystem points; // sistema de puntos
+float snakeSpeed = 4.0f; // factor de velocidad
 
 // mover cursor en consola
 void gotoxy(int x, int y) {
@@ -43,7 +44,7 @@ void generarComida(int &comidaX, int &comidaY) {
 // actualizar HUD con puntaje y combo
 void actualizarHUD() {
     gotoxy(10, 3);
-    cout << "Puntos: " << points.getScore() 
+    cout << "Puntos: " << points.getScore()
          << "  Highscore: " << points.getHighScore()
          << "  Combo: " << points.getComboCount()
          << "  x" << points.getMultiplier() << "   ";
@@ -59,7 +60,7 @@ void onSnakeAteFood() {
 void onGameOver() {
     points.saveHighScore();
     gotoxy(25, 17);
-    cout << "Score: " << points.getScore() 
+    cout << "Score: " << points.getScore()
          << "  Highscore: " << points.getHighScore();
 }
 
@@ -71,6 +72,7 @@ void startNewRun() {
 
 // loop principal del juego
 void jugar() {
+    vector<pair<int, int>> cuerpo;
     int x = 8, y = 10;
     int dx = 1, dy = 0;
     bool paused = false;
@@ -81,6 +83,9 @@ void jugar() {
     space();
     startNewRun();
     generarComida(comidaX, comidaY);
+
+    cuerpo.push_back({x, y});
+    int snakeLength = 1;
 
     while (true) {
         if (_kbhit()) {
@@ -105,37 +110,50 @@ void jugar() {
         }
 
         if (!paused) {
-            gotoxy(x, y);
-            cout << snake;
-
-            Sleep(80);
-
-            gotoxy(x, y);
-            cout << " "; 
-
             x += dx;
             y += dy;
-        }
 
-        // perder si toca pared
-        if (!paused && (x <= 4 || x >= 68 || y <= 5 || y >= 25)) {
-            gotoxy(30, 15);
-            cout << "GAME OVER - TOCASTE LA PARED";
-            onGameOver();
-            break;
-        }
+            // perder al tocar pared
+            if (x <= 4 || x >= 68 || y <= 5 || y >= 25) {
+                gotoxy(30, 15);
+                cout << "GAME OVER - TOCASTE LA PARED";
+                onGameOver();
+                break;
+            }
 
-        // comer comida
-        if (x == comidaX && y == comidaY) {
-            // borrar comida anterior
-            gotoxy(comidaX, comidaY);
-            cout << " ";
+            // agregar cabeza
+            cuerpo.insert(cuerpo.begin(), {x, y});
 
-            // generar nueva comida
-            generarComida(comidaX, comidaY);
+            // si no ha comido borra(asi no crece si no es necesario)
+            if ((int)cuerpo.size() > snakeLength) {
+                gotoxy(cuerpo.back().first, cuerpo.back().second);
+                cout << " ";
+                cuerpo.pop_back();
+            }
 
-            // actualizar puntos
-            onSnakeAteFood();
+            // dibujar serpiente al inicio
+            gotoxy(cuerpo[0].first, cuerpo[0].second);
+            cout << snake;
+
+            // dibujar cuerpo
+            for (size_t i = 1; i < cuerpo.size(); i++) {
+                gotoxy(cuerpo[i].first, cuerpo[i].second);
+                cout << "o";
+            }
+
+            // comer comida
+            if (x == comidaX && y == comidaY) {
+                snakeLength++;
+                //borrar comida anterior
+                gotoxy(comidaX, comidaY);
+                cout << " ";
+                // generar nueva comida
+                generarComida(comidaX, comidaY);
+                // actualizar puntos
+                onSnakeAteFood();
+            }
+
+            Sleep(90);
         }
     }
 }
@@ -156,5 +174,3 @@ int main() {
 
     return 0;
 }
-
-
