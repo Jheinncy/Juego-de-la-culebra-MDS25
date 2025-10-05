@@ -123,6 +123,12 @@ void jugar() {
 
             // agregar cabeza
             cuerpo.insert(cuerpo.begin(), {x, y});
+            //pierde si choca con si misma
+            for(size_t i =1; i<cuerpo.size();i++)
+                { if(cuerpo[i].first==x && cuerpo[i].second==y )
+                    {gotoxy(30,15); cout<<"GAME OVER - CHOCASTE CONTIGO MISMO";
+            onGameOver();
+            return;}}
 
             // si no ha comido borra(asi no crece si no es necesario)
             if ((int)cuerpo.size() > snakeLength) {
