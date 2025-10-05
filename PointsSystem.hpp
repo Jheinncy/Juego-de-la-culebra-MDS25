@@ -63,11 +63,12 @@ public:
 
   
     bool saveHighScore() const {
-        std::ofstream out(highScoreFile, std::ios::trunc);
-        if (!out) return false;
-        out << highScore << '\n';
-        return true;
-    }
+    std::ofstream out(highScoreFile, std::ios::trunc);
+    if (!out) return false;
+    out << highScore;
+    out.close();
+    return true;
+}
 
  
     void resetRun() {
@@ -77,7 +78,7 @@ public:
         lastFoodTime = std::chrono::steady_clock::time_point();
     }
 
-  
+    void loadHighScorePublic() { loadHighScore(); }
     long long getScore() const { return score; }
     long long getHighScore() const { return highScore; }
     int getComboCount() const { return comboCount; }
