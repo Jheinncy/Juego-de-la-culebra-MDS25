@@ -168,6 +168,9 @@ int main() {
     srand(time(NULL));
     char opcion;
 
+    // 🔹 Cargar récord al iniciar
+    points.loadHighScorePublic();
+
     do {
         jugar();
         gotoxy(25, 19);
@@ -180,3 +183,4 @@ int main() {
 
     return 0;
 }
+
