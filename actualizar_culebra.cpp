@@ -3,12 +3,19 @@
 #include <conio.h>
 #include <cstdlib>
 #include <ctime>
-#include "points_system.hpp"  // usa tu versión mejorada
+#include <vector>
+#include "points_system.hpp"
 
 using namespace std;
 
-PointsSystem points;  // sistema de puntos
-float snakeSpeed = 4.0f;  // factor de velocidad
+PointsSystem points;
+float snakeSpeed = 4.0f;
+int gameMode = 0; // 0 = clásico, 1 = con obstáculos
+
+struct Obstacle {
+    int x, y;
+};
+vector<Obstacle> obstacles;
 
 // mover cursor en consola
 void gotoxy(int x, int y) {
@@ -40,18 +47,34 @@ void generarComida(int &comidaX, int &comidaY) {
     cout << "*";
 }
 
+// generar obstáculos
+void generarObstaculos(int cantidad) {
+    obstacles.clear();
+    for (int i = 0; i < cantidad; i++) {
+        Obstacle ob;
+        ob.x = 6 + rand() % (67 - 6);
+        ob.y = 7 + rand() % (24 - 7);
+        obstacles.push_back(ob);
+
+        gotoxy(ob.x, ob.y);
+        cout << "#"; // representamos obstáculo con "#"
+    }
+}
+
 // actualizar HUD con puntaje y combo
 void actualizarHUD() {
     gotoxy(10, 3);
-    cout << "Puntos: " << points.getScore() 
+    cout << "Puntos: " << points.getScore()
          << "  Highscore: " << points.getHighScore()
          << "  Combo: " << points.getComboCount()
-         << "  x" << points.getMultiplier() << "   ";
+         << "  x" << points.getMultiplier()
+         << "   ";
 }
 
 // evento al comer
 void onSnakeAteFood() {
     points.onFoodEaten(snakeSpeed);
+    snakeSpeed += 0.5f; // aumenta velocidad al comer
     actualizarHUD();
 }
 
@@ -59,13 +82,14 @@ void onSnakeAteFood() {
 void onGameOver() {
     points.saveHighScore();
     gotoxy(25, 17);
-    cout << "Score: " << points.getScore() 
+    cout << "Score: " << points.getScore()
          << "  Highscore: " << points.getHighScore();
 }
 
 // reinicio de partida
 void startNewRun() {
     points.resetRun();
+    snakeSpeed = 4.0f;
     actualizarHUD();
 }
 
@@ -81,6 +105,10 @@ void jugar() {
     space();
     startNewRun();
     generarComida(comidaX, comidaY);
+
+    if (gameMode == 1) { // obstaculos
+        generarObstaculos(10); // por ejemplo, 10 obstáculos
+    }
 
     while (true) {
         if (_kbhit()) {
@@ -108,10 +136,10 @@ void jugar() {
             gotoxy(x, y);
             cout << snake;
 
-            Sleep(80);
+            Sleep(max(10, int(100 - snakeSpeed * 5)));
 
             gotoxy(x, y);
-            cout << " "; 
+            cout << " ";
 
             x += dx;
             y += dy;
@@ -123,6 +151,18 @@ void jugar() {
             cout << "GAME OVER - TOCASTE LA PARED";
             onGameOver();
             break;
+        }
+
+        // perder si toca un obstáculo
+        if (gameMode == 1) {
+            for (auto &ob : obstacles) {
+                if (x == ob.x && y == ob.y) {
+                    gotoxy(30, 15);
+                    cout << "GAME OVER - GOLPEASTE UN OBSTÁCULO";
+                    onGameOver();
+                    return;
+                }
+            }
         }
 
         // comer comida
@@ -138,6 +178,15 @@ int main() {
     char opcion;
 
     do {
+        system("cls");
+        cout << "Selecciona el modo de juego:\n";
+        cout << "1. Clasico\n";
+        cout << "2. Con Obstaculos\n";
+        cout << "Opcion: ";
+        char modo = getch();
+        if (modo == '1') gameMode = 0;
+        else if (modo == '2') gameMode = 1;
+
         jugar();
         gotoxy(25, 19);
         cout << "Deseas jugar otra vez? (s/n): ";
